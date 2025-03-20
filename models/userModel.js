@@ -1,7 +1,5 @@
 import {DataTypes} from 'sequelize';
-import {sequelize} from '../app.js';
-import {Role} from './roleModel.js';
-import UserHasRole from './userHasRoleModel.js';
+import {sequelize} from '../database.js';
 
 const User = sequelize.define('User', {
     id: {
@@ -37,8 +35,6 @@ const User = sequelize.define('User', {
     timestamps: true
 });
 
-User.belongsToMany(Role, {through: UserHasRole});
-
 const createUser = async (user) => {
     try {
         const newUser = await User.create(user);
@@ -69,7 +65,7 @@ const findUserById = async (id) => {
     }
 };
 
-const findUserByEmail = async (id) => {
+const findUserByEmail = async (email) => {
     try {
         const user = await User.findOne({where: {email, deletedAt: null}});
         return user;
@@ -96,7 +92,6 @@ const softDeleteUser = async (id) => {
     try {
         const updatedRows = await User.update({deletedAt: new Date()}, {where: {id, deletedAt: null}});
         return updatedRows > 0;
-
     } catch (error) {
         console.error('Error soft deleting user:', error);
         throw error;
@@ -112,4 +107,3 @@ export {
     updateUser,
     softDeleteUser
 };
-    

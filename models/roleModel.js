@@ -1,7 +1,5 @@
 import {DataTypes} from 'sequelize';
-import {sequelize} from '../app.js';
-import {User} from './userModel.js';
-import UserHasRole from './userHasRoleModel.js';
+import {sequelize} from '../database.js';
 
 const Role = sequelize.define('Role', {
     id: {
@@ -27,8 +25,6 @@ const Role = sequelize.define('Role', {
     paranoid: true,
     timestamps: true
 });
-
-Role.belongsToMany(User, {through: UserHasRole});
 
 const createRole = async (role) => {
     try {
@@ -94,4 +90,3 @@ export {
     updateRole,
     softDeleteRole
 };
-    

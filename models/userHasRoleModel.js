@@ -1,5 +1,5 @@
 import {DataTypes} from 'sequelize';
-import {sequelize} from '../app.js';
+import {sequelize} from '../database.js';
 
 const UserHasRole = sequelize.define('UserHasRole', {
     id: {
@@ -38,4 +38,3 @@ const UserHasRole = sequelize.define('UserHasRole', {
 });
 
 export default UserHasRole;
-    
