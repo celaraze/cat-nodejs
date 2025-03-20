@@ -1,0 +1,11 @@
+database:
+  name: cat
+  username: cat
+  password: 5hB7HichCytHFEia
+  host: 192.168.222.121
+  dialect: mysql
+jwt:
+  secret: your_jwt_secret
+  expiresIn: '1h'
+  refreshExpiresIn: '7d'
+    
