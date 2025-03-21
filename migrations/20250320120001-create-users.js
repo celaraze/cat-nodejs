@@ -1,6 +1,6 @@
 import {DataTypes} from 'sequelize';
 
-const up = async (queryInterface) => {
+const up = async ({context: queryInterface}) => {
     await queryInterface.createTable('Users', {
         id: {
             allowNull: false,
@@ -41,7 +41,7 @@ const up = async (queryInterface) => {
         }
     });
 }
-const down = async (queryInterface) => {
+const down = async ({context: queryInterface}) => {
     await queryInterface.dropTable('Users');
 }
 

@@ -1,13 +1,13 @@
-import { createRole, getRoles, findRoleById, updateRole, softDeleteRole } from '../models/roleModel.js';
+import {createRole, findRoleById, getRoles, softDeleteRole, updateRole} from '../models/roleModel.js';
 import sendResponse from '../utils/response.js';
-import { verifyToken, checkPermissions } from '../utils/authUtils.js';
+import {checkPermissions, verifyToken} from '../utils/auth.js';
 
 const createRoleController = async (req, res) => {
     const userId = verifyToken(req);
     if (!userId) {
         return sendResponse(res, 401, 'Unauthorized');
     }
-    const hasPermission = await checkPermissions(userId, ['role:create']);
+    const hasPermission = await checkPermissions(userId, ['role:insert']);
     if (!hasPermission) {
         return sendResponse(res, 403, 'Forbidden');
     }
@@ -16,7 +16,7 @@ const createRoleController = async (req, res) => {
         const newRole = await createRole(role);
         sendResponse(res, 201, 'Role created successfully', newRole);
     } catch (error) {
-        sendResponse(res, 500, 'Failed to create role');
+        sendResponse(res, 500, 'Failed to insert role');
     }
 };
 
@@ -46,7 +46,7 @@ const getRoleByIdController = async (req, res) => {
     if (!hasPermission) {
         return sendResponse(res, 403, 'Forbidden');
     }
-    const { id } = req.params;
+    const {id} = req.params;
     try {
         const role = await findRoleById(id);
         if (role) {
@@ -68,7 +68,7 @@ const updateRoleController = async (req, res) => {
     if (!hasPermission) {
         return sendResponse(res, 403, 'Forbidden');
     }
-    const { id } = req.params;
+    const {id} = req.params;
     const roleData = req.body;
     try {
         const updatedRole = await updateRole(id, roleData);
@@ -91,7 +91,7 @@ const softDeleteRoleController = async (req, res) => {
     if (!hasPermission) {
         return sendResponse(res, 403, 'Forbidden');
     }
-    const { id } = req.params;
+    const {id} = req.params;
     try {
         const isDeleted = await softDeleteRole(id);
         if (isDeleted) {

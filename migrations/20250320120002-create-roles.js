@@ -1,6 +1,6 @@
 import {DataTypes} from 'sequelize';
 
-const up = async (queryInterface) => {
+const up = async ({context: queryInterface}) => {
     await queryInterface.createTable('Roles', {
         id: {
             allowNull: false,
@@ -14,7 +14,7 @@ const up = async (queryInterface) => {
             unique: true
         },
         scopes: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
+            type: DataTypes.JSON,
             allowNull: false
         },
         deletedAt: {
@@ -33,8 +33,8 @@ const up = async (queryInterface) => {
     });
 }
 
-const down = async (queryInterface) => {
+const down = async ({context: queryInterface}) => {
     await queryInterface.dropTable('Roles');
 }
 
-export {up, down};
+export {up, down}

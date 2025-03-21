@@ -1,37 +1,22 @@
-import { createUser, getUsers, findUserById, updateUser, softDeleteUser } from '../models/userModel.js';
-import { getRoles } from '../models/roleModel.js';
 import sendResponse from '../utils/response.js';
-import { verifyToken, checkPermissions } from '../utils/authUtils.js';
+import {verify} from '../utils/auth.js';
+import {insert, selectById, selectAll, softDelete, update} from "../services/userService.js";
 
 const createUserController = async (req, res) => {
-    const userId = verifyToken(req);
-    if (!userId) {
-        return sendResponse(res, 401, 'Unauthorized');
-    }
-    const hasPermission = await checkPermissions(userId, ['user:create']);
-    if (!hasPermission) {
-        return sendResponse(res, 403, 'Forbidden');
-    }
+    await verify(req, res, ['user:insert']);
     const user = req.body;
     try {
-        const newUser = await createUser(user);
+        const newUser = await insert(user);
         sendResponse(res, 201, 'User created successfully', newUser);
     } catch (error) {
-        sendResponse(res, 500, 'Failed to create user');
+        sendResponse(res, 500, 'Failed to insert user');
     }
 };
 
 const getUsersController = async (req, res) => {
-    const userId = verifyToken(req);
-    if (!userId) {
-        return sendResponse(res, 401, 'Unauthorized');
-    }
-    const hasPermission = await checkPermissions(userId, ['user:list']);
-    if (!hasPermission) {
-        return sendResponse(res, 403, 'Forbidden');
-    }
+    await verify(req, res, ['user:list']);
     try {
-        const allUsers = await getUsers();
+        const allUsers = await selectAll();
         sendResponse(res, 200, 'Users retrieved successfully', allUsers);
     } catch (error) {
         sendResponse(res, 500, 'Failed to get users');
@@ -39,17 +24,10 @@ const getUsersController = async (req, res) => {
 };
 
 const getUserByIdController = async (req, res) => {
-    const userId = verifyToken(req);
-    if (!userId) {
-        return sendResponse(res, 401, 'Unauthorized');
-    }
-    const hasPermission = await checkPermissions(userId, ['user:read']);
-    if (!hasPermission) {
-        return sendResponse(res, 403, 'Forbidden');
-    }
-    const { id } = req.params;
+    await verify(req, res, ['user:info']);
+    const {id} = req.params;
     try {
-        const user = await findUserById(id);
+        const user = await selectById(id);
         if (user) {
             sendResponse(res, 200, 'User retrieved successfully', user);
         } else {
@@ -61,18 +39,11 @@ const getUserByIdController = async (req, res) => {
 };
 
 const updateUserController = async (req, res) => {
-    const userId = verifyToken(req);
-    if (!userId) {
-        return sendResponse(res, 401, 'Unauthorized');
-    }
-    const hasPermission = await checkPermissions(userId, ['user:update']);
-    if (!hasPermission) {
-        return sendResponse(res, 403, 'Forbidden');
-    }
-    const { id } = req.params;
+    await verify(req, res, ['user:update']);
+    const {id} = req.params;
     const userData = req.body;
     try {
-        const updatedUser = await updateUser(id, userData);
+        const updatedUser = await update(id, userData);
         if (updatedUser) {
             sendResponse(res, 200, 'User updated successfully', updatedUser);
         } else {
@@ -84,17 +55,10 @@ const updateUserController = async (req, res) => {
 };
 
 const softDeleteUserController = async (req, res) => {
-    const userId = verifyToken(req);
-    if (!userId) {
-        return sendResponse(res, 401, 'Unauthorized');
-    }
-    const hasPermission = await checkPermissions(userId, ['user:delete']);
-    if (!hasPermission) {
-        return sendResponse(res, 403, 'Forbidden');
-    }
-    const { id } = req.params;
+    await verify(req, res, ['user:soft-delete']);
+    const {id} = req.params;
     try {
-        const isDeleted = await softDeleteUser(id);
+        const isDeleted = await softDelete(id);
         if (isDeleted) {
             sendResponse(res, 200, 'User soft deleted successfully');
         } else {
@@ -106,21 +70,14 @@ const softDeleteUserController = async (req, res) => {
 };
 
 const getUserRolesController = async (req, res) => {
-    const userId = verifyToken(req);
-    if (!userId) {
-        return sendResponse(res, 401, 'Unauthorized');
-    }
-    const hasPermission = await checkPermissions(userId, ['user:roles']);
-    if (!hasPermission) {
-        return sendResponse(res, 403, 'Forbidden');
-    }
-    const { userId: targetUserId } = req.params;
+    await verify(req, res, ['user:list-roles']);
+    const {userId: targetUserId} = req.params;
     try {
-        const user = await findUserById(targetUserId);
+        const user = await selectById(targetUserId);
         if (!user) {
             return sendResponse(res, 404, 'User not found');
         }
-        const roles = await user.getRoles({ where: { deletedAt: null } });
+        const roles = await user.getRoles({where: {deletedAt: null}});
         const scopes = roles.flatMap(role => role.scopes);
         const uniqueScopes = [...new Set(scopes)];
         sendResponse(res, 200, 'User roles and scopes retrieved successfully', {

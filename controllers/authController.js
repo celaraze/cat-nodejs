@@ -1,23 +1,19 @@
-import jwt from 'jsonwebtoken';
-import { findUserByEmail } from '../models/userModel.js';
-import yaml from 'js-yaml';
-import fs from 'fs';
 import sendResponse from '../utils/response.js';
+import {decode, encode, encodeForRefreshing} from "../utils/jwt.js";
+import {compare} from "../utils/bcrypt.js";
+import {selectByEmail} from "../services/userService.js";
 
-// 读取配置文件
-const config = yaml.load(fs.readFileSync('config.yaml', 'utf8'));
-const jwtConfig = config.jwt;
 
 const login = async (req, res) => {
-    const { email, password } = req.body;
+    const {email, password} = req.body;
     try {
-        const user = await findUserByEmail(email);
-        if (!user || user.password!== password) {
+        const user = await selectByEmail(email);
+        if (!user || !compare(password, user.password)) {
             return sendResponse(res, 401, 'Invalid credentials');
         }
-        const token = jwt.sign({ userId: user.id }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn });
-        const refreshToken = jwt.sign({ userId: user.id }, jwtConfig.secret, { expiresIn: jwtConfig.refreshExpiresIn });
-        sendResponse(res, 200, 'Login successful', { token, refreshToken });
+        const token = encode({userId: user.id});
+        const refreshToken = encodeForRefreshing({userId: user.id});
+        sendResponse(res, 200, 'Login successful', {token, refreshToken});
     } catch (error) {
         sendResponse(res, 500, 'Login failed');
     }
@@ -29,8 +25,8 @@ const getCurrentUser = async (req, res) => {
         return sendResponse(res, 401, 'No token provided');
     }
     try {
-        const decoded = jwt.verify(token, jwtConfig.secret);
-        const user = await findUserByEmail(decoded.email);
+        const decoded = decode(token);
+        const user = await selectByEmail(decoded.email);
         if (!user) {
             return sendResponse(res, 404, 'User not found');
         }
@@ -41,14 +37,14 @@ const getCurrentUser = async (req, res) => {
 };
 
 const refreshToken = async (req, res) => {
-    const { refreshToken } = req.body;
+    const {refreshToken} = req.body;
     if (!refreshToken) {
         return sendResponse(res, 401, 'No refresh token provided');
     }
     try {
-        const decoded = jwt.verify(refreshToken, jwtConfig.secret);
-        const newToken = jwt.sign({ userId: decoded.userId }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn });
-        sendResponse(res, 200, 'Token refreshed successfully', { token: newToken });
+        const decoded = decode(refreshToken);
+        const newToken = encode({userId: decoded.userId});
+        sendResponse(res, 200, 'Token refreshed successfully', {token: newToken});
     } catch (error) {
         sendResponse(res, 401, 'Invalid refresh token');
     }
