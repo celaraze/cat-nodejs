@@ -1,9 +1,9 @@
+import "reflect-metadata";
 import express from 'express';
 import bodyParser from 'body-parser';
-import "reflect-metadata";
-import userRoutes from './routes/userRoutes';
+// import userRoutes from './routes/userRoutes';
 import authRoutes from './routes/authRoutes';
-import roleRoutes from './routes/roleRoutes';
+// import roleRoutes from './routes/roleRoutes';
 import {appDataSource} from "./dependencies/database";
 
 
@@ -15,16 +15,15 @@ appDataSource.initialize()
         console.error(error);
     })
 
-// 解析 JSON 请求体
 const app = express();
 app.use(bodyParser.json());
 
-// 使用用户路由
-app.use('/api/users', userRoutes);
+// // 使用用户路由
+// app.use('/api/users', userRoutes);
 // 使用认证路由
 app.use('/api/auth', authRoutes);
-// 使用角色路由
-app.use('/api/roles', roleRoutes);
+// // 使用角色路由
+// app.use('/api/roles', roleRoutes);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

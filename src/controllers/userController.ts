@@ -1,9 +1,9 @@
 import sendResponse from '../utils/response';
-import {verify} from '../utils/auth';
-import {insert, selectById, selectAll, softDelete, update} from "../services/userService";
+import {insert, selectAll, selectById, softDelete} from "../services/userService";
+import {checkPermissions} from "../services/authService";
 
 const createUserController = async (req, res) => {
-    await verify(req, res, ['user:insert']);
+    await checkPermissions(req, res, ['user:insert']);
     const user = req.body;
     try {
         const newUser = await insert(user);
@@ -14,7 +14,7 @@ const createUserController = async (req, res) => {
 };
 
 const getUsersController = async (req, res) => {
-    await verify(req, res, ['user:list']);
+    await checkPermissions(req, res, ['user:list']);
     try {
         const allUsers = await selectAll();
         sendResponse(res, 200, 'Users retrieved successfully', allUsers);
@@ -24,7 +24,7 @@ const getUsersController = async (req, res) => {
 };
 
 const getUserByIdController = async (req, res) => {
-    await verify(req, res, ['user:info']);
+    await checkPermissions(req, res, ['user:info']);
     const {id} = req.params;
     try {
         const user = await selectById(id);
@@ -39,7 +39,7 @@ const getUserByIdController = async (req, res) => {
 };
 
 const updateUserController = async (req, res) => {
-    await verify(req, res, ['user:update']);
+    await checkPermissions(req, res, ['user:update']);
     const {id} = req.params;
     const userData = req.body;
     try {
@@ -55,7 +55,7 @@ const updateUserController = async (req, res) => {
 };
 
 const softDeleteUserController = async (req, res) => {
-    await verify(req, res, ['user:soft-delete']);
+    await checkPermissions(req, res, ['user:soft-delete']);
     const {id} = req.params;
     try {
         const isDeleted = await softDelete(id);
@@ -70,7 +70,7 @@ const softDeleteUserController = async (req, res) => {
 };
 
 const getUserRolesController = async (req, res) => {
-    await verify(req, res, ['user:list-roles']);
+    await checkPermissions(req, res, ['user:list-roles']);
     const {userId: targetUserId} = req.params;
     try {
         const user = await selectById(targetUserId);

@@ -1,4 +1,4 @@
-import {Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, Relation} from "typeorm";
+import {Column, Entity, ManyToMany, PrimaryGeneratedColumn, Relation} from "typeorm";
 import {User} from "./User";
 
 @Entity()
@@ -6,19 +6,21 @@ export class Role {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column()
+    @Column("varchar")
     name!: string;
 
-    @Column()
+    @Column("varchar", {array: true})
+    scopes!: string[];
+
+    @Column("timestamp")
     createdAt!: Date;
 
-    @Column()
+    @Column("timestamp")
     updatedAt!: Date;
 
-    @Column()
+    @Column("timestamp")
     deletedAt!: Date;
 
     @ManyToMany(() => User, (user) => user.roles)
-    @JoinTable()
     users!: Relation<User[]>;
 }

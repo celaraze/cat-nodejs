@@ -6,28 +6,30 @@ export class User {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column()
+    @Column("varchar")
     name!: string;
 
-    @Column()
+    @Column("varchar")
     username!: string;
 
-    @Column()
+    @Column("varchar")
     password!: string;
 
-    @Column()
+    @Column("varchar")
     email!: string;
 
-    @Column()
+    @Column("timestamp")
     createdAt!: Date;
 
-    @Column()
+    @Column("timestamp")
     updatedAt!: Date;
 
-    @Column()
+    @Column("timestamp")
     deletedAt!: Date;
 
     @ManyToMany(() => Role, (role) => role.users)
-    @JoinTable()
+    @JoinTable({
+        name: "user_roles"
+    })
     roles!: Relation<Role[]>;
 }

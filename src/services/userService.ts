@@ -82,6 +82,7 @@ export {
     insert,
     selectAll,
     selectById,
+    selectByUsername,
     selectByEmail,
     softDelete
 }
