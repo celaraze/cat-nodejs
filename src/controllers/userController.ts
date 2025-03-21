@@ -1,6 +1,6 @@
-import sendResponse from '../utils/response.js';
-import {verify} from '../utils/auth.js';
-import {insert, selectById, selectAll, softDelete, update} from "../services/userService.js";
+import sendResponse from '../utils/response';
+import {verify} from '../utils/auth';
+import {insert, selectById, selectAll, softDelete, update} from "../services/userService";
 
 const createUserController = async (req, res) => {
     await verify(req, res, ['user:insert']);

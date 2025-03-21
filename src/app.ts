@@ -1,9 +1,19 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import userRoutes from './routes/userRoutes.js';
-import authRoutes from './routes/authRoutes.js';
-import roleRoutes from './routes/roleRoutes.js';
-import './models/associations.js';
+import "reflect-metadata";
+import userRoutes from './routes/userRoutes';
+import authRoutes from './routes/authRoutes';
+import roleRoutes from './routes/roleRoutes';
+import {appDataSource} from "./dependencies/database";
+
+
+appDataSource.initialize()
+    .then(() => {
+        console.log("Data Source has been initialized!")
+    })
+    .catch(error => {
+        console.error(error);
+    })
 
 // 解析 JSON 请求体
 const app = express();

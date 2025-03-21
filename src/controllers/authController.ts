@@ -1,10 +1,11 @@
-import sendResponse from '../utils/response.js';
-import {decode, encode, encodeForRefreshing} from "../utils/jwt.js";
-import {compare} from "../utils/bcrypt.js";
-import {selectByEmail} from "../services/userService.js";
+import sendResponse from '../utils/response';
+import {decode, encode, encodeForRefreshing} from "../utils/jwt";
+import {compare} from "../utils/bcrypt";
+import {selectByEmail} from "../services/userService";
+import {Request, Response} from "express";
 
 
-const login = async (req, res) => {
+const login = async (req: Request, res: Response) => {
     const {email, password} = req.body;
     try {
         const user = await selectByEmail(email);

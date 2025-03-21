@@ -1,6 +1,6 @@
-import {createRole, findRoleById, getRoles, softDeleteRole, updateRole} from '../models/roleModel.js';
-import sendResponse from '../utils/response.js';
-import {checkPermissions, verifyToken} from '../utils/auth.js';
+import {createRole, findRoleById, getRoles, softDeleteRole, updateRole} from '../models/roleModel';
+import sendResponse from '../utils/response';
+import {checkPermissions, verifyToken} from '../utils/auth';
 
 const createRoleController = async (req, res) => {
     const userId = verifyToken(req);

@@ -2,14 +2,6 @@
 
 `node app.js`
 
-数据库迁移
-
-`node migrate.js up`
-
-数据库回滚
-
-`node migrate.js down`
-
 生成随机的 JWT 密钥
 
 linux `openssl rand -hex 32`

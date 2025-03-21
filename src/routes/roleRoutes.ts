@@ -1,5 +1,11 @@
 import express from 'express';
-import { createRoleController, getRolesController, getRoleByIdController, updateRoleController, softDeleteRoleController } from '../controllers/roleController.js';
+import {
+    createRoleController,
+    getRoleByIdController,
+    getRolesController,
+    softDeleteRoleController,
+    updateRoleController
+} from '../controllers/roleController';
 
 const router = express.Router();
 
